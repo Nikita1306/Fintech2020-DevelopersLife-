@@ -1,5 +1,6 @@
 package com.example.developerslife.ui.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -18,6 +19,10 @@ class PageViewModel : ViewModel() {
     val response: LiveData<String>
         get() = _response
 
+    private val _listOfGifUrls = MutableLiveData<List<String>>()
+    val listOfGifUrls: LiveData<List<String>>
+        get() = _listOfGifUrls
+
     private val _description = MutableLiveData<String>()
     val description: LiveData<String>
         get() = _description
@@ -28,19 +33,20 @@ class PageViewModel : ViewModel() {
     fun getIndex() : Int {
         return _index.value ?: 0
     }
-    init{
-        getGif()
-    }
 
-    private fun getGif() {
+init {
+    _listOfGifUrls.value = listOf("")
+}
+    fun getGif() {
         Api.retrofitService.getProperties().enqueue( object : Callback<GifProperty> {
             override fun onFailure(call: Call<GifProperty>, t: Throwable) {
-                _response.value = "Failure: " + t.message
+                //_response.value = "Failure: " + t.message
             }
 
             override fun onResponse(call: Call<GifProperty>, response: Response<GifProperty>) {
                 _response.value = "${response.body()?.gifUrlSource}"
                 _description.value = "${response.body()?.description}"
+                _listOfGifUrls.value?.plus(_response.value.toString())
             }
         })
     }

@@ -2,9 +2,11 @@ package com.example.developerslife.ui.main
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.VideoView
@@ -13,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.developerslife.Api
 import com.example.developerslife.MainActivity
 import com.example.developerslife.R
@@ -44,21 +47,45 @@ class PlaceholderFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_main, container, false)
         val textView: TextView = root.findViewById(R.id.section_label)
         val imageView: ImageView = root.findViewById(R.id.imageView)
+        val buttonNext: ImageButton = root.findViewById(R.id.button_next)
+        val buttonPrevious: ImageButton = root.findViewById(R.id.button_previous)
+        var listOfGifs: ArrayList<String> = ArrayList()
         pageViewModel.description.observe(viewLifecycleOwner, Observer { new ->
             textView.setText(new)
         })
-//        val tabs: TabLayout = root.findViewById(R.id.tabs)
-//
+        pageViewModel.getGif()
 
+        pageViewModel.response.observe(viewLifecycleOwner, Observer { new ->
+                listOfGifs.add(new)
+                Glide.with(this)
+                    .load(new)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .into(imageView)
+                Log.d("TAGS", "${listOfGifs.size}")
+
+        })
+        pageViewModel.listOfGifUrls.observe(viewLifecycleOwner, Observer { new ->
+           Log.d("TAGS","${new.size}")
+        })
+//        listOfGifs.removeAt(listOfGifs.lastIndex)
         pageViewModel.getIndex()
-        imageView.setOnClickListener {
-            Glide.with(this)
-                .load(pageViewModel.response.value)
-                .placeholder(R.drawable.ic_launcher_background)
-                .into(imageView)
-            //textView.setText(pageViewModel.getIndex().toString())
+
+        buttonNext.setOnClickListener {
+            pageViewModel.getGif()
         }
 
+        buttonPrevious.setOnClickListener{
+            listOfGifs.forEach { x ->
+                Log.d("TAGS", x)
+            }
+            Log.d("TAGS", listOfGifs.last())
+            Glide.with(this)
+                .load(listOfGifs.get(listOfGifs.lastIndex - 1))
+                .onlyRetrieveFromCache(true)
+                .into(imageView)
+            listOfGifs.removeAt(listOfGifs.lastIndex)
+        }
         return root
     }
 
