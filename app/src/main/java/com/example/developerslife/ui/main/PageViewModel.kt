@@ -15,8 +15,8 @@ import retrofit2.Callback
 class PageViewModel : ViewModel() {
 
     private val _index = MutableLiveData<Int>()
-    private val _response = MutableLiveData<String>()
-    val response: LiveData<String>
+    private val _response = MutableLiveData<Pair<String,String>>()
+    val response: LiveData<Pair<String,String>>
         get() = _response
 
     private val _description = MutableLiveData<String>()
@@ -39,8 +39,8 @@ init {
             }
 
             override fun onResponse(call: Call<GifProperty>, response: Response<GifProperty>) {
-                _response.value = "${response.body()?.gifUrlSource}"
-                _description.value = "${response.body()?.description}"
+                _response.value = Pair(response.body()?.gifUrlSource!!, response.body()?.description!!)
+               // _description.value = "${response.body()?.description}"
             }
         })
     }

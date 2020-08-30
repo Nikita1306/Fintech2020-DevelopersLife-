@@ -50,8 +50,7 @@ class PlaceholderFragment : Fragment() {
         val buttonNext: ImageButton = root.findViewById(R.id.button_next)
         val buttonPrevious: ImageButton = root.findViewById(R.id.button_previous)
         var currentGif = 0
-        //TODO: Изменить ArrayList на Map, Set или т.д. для сохранения как ссылки, так и описания гифки
-        var listOfGifs: ArrayList<String> = ArrayList()
+        var listOfGifs: ArrayList<Pair<String, String>> = ArrayList()
         pageViewModel.description.observe(viewLifecycleOwner, Observer { new ->
             textView.setText(new)
         })
@@ -60,12 +59,12 @@ class PlaceholderFragment : Fragment() {
         pageViewModel.response.observe(viewLifecycleOwner, Observer { new ->
                 listOfGifs.add(new)
                 Glide.with(this)
-                    .load(new)
+                    .load(new.first)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_launcher_background)
                     .into(imageView)
-
-                Log.d("TAGS", "${listOfGifs.size}")
+                textView.setText(new.second)
+                Log.d("TAGS", "${new}")
 
         })
         pageViewModel.getIndex()
@@ -78,10 +77,10 @@ class PlaceholderFragment : Fragment() {
 
             } else {
                 Glide.with(this)
-                    .load(listOfGifs[currentGif])
+                    .load(listOfGifs[currentGif].first)
                     .onlyRetrieveFromCache(true)
                     .into(imageView)
-                //currentGif++
+                textView.setText(listOfGifs[currentGif].second)
             }
             if (listOfGifs.size != 0) {
                 buttonPrevious.visibility = View.VISIBLE
@@ -91,10 +90,10 @@ class PlaceholderFragment : Fragment() {
         buttonPrevious.setOnClickListener{
             currentGif--
             Glide.with(this)
-                .load(listOfGifs[currentGif])
+                .load(listOfGifs[currentGif].first)
                 .onlyRetrieveFromCache(true)
                 .into(imageView)
-
+            textView.setText(listOfGifs[currentGif].second)
             Log.d("TAGS", "${listOfGifs.size}")
             if (currentGif == 0) {
                 buttonPrevious.visibility = View.GONE
