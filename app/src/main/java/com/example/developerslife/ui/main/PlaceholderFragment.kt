@@ -49,6 +49,8 @@ class PlaceholderFragment : Fragment() {
         val imageView: ImageView = root.findViewById(R.id.imageView)
         val buttonNext: ImageButton = root.findViewById(R.id.button_next)
         val buttonPrevious: ImageButton = root.findViewById(R.id.button_previous)
+        var currentGif = 0
+        //TODO: Изменить ArrayList на Map, Set или т.д. для сохранения как ссылки, так и описания гифки
         var listOfGifs: ArrayList<String> = ArrayList()
         pageViewModel.description.observe(viewLifecycleOwner, Observer { new ->
             textView.setText(new)
@@ -62,29 +64,41 @@ class PlaceholderFragment : Fragment() {
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_launcher_background)
                     .into(imageView)
+
                 Log.d("TAGS", "${listOfGifs.size}")
 
         })
-        pageViewModel.listOfGifUrls.observe(viewLifecycleOwner, Observer { new ->
-           Log.d("TAGS","${new.size}")
-        })
-//        listOfGifs.removeAt(listOfGifs.lastIndex)
         pageViewModel.getIndex()
 
         buttonNext.setOnClickListener {
-            pageViewModel.getGif()
+            currentGif++
+            if (currentGif == listOfGifs.size) {
+                pageViewModel.getGif()
+
+
+            } else {
+                Glide.with(this)
+                    .load(listOfGifs[currentGif])
+                    .onlyRetrieveFromCache(true)
+                    .into(imageView)
+                //currentGif++
+            }
+            if (listOfGifs.size != 0) {
+                buttonPrevious.visibility = View.VISIBLE
+            }
         }
 
         buttonPrevious.setOnClickListener{
-            listOfGifs.forEach { x ->
-                Log.d("TAGS", x)
-            }
-            Log.d("TAGS", listOfGifs.last())
+            currentGif--
             Glide.with(this)
-                .load(listOfGifs.get(listOfGifs.lastIndex - 1))
+                .load(listOfGifs[currentGif])
                 .onlyRetrieveFromCache(true)
                 .into(imageView)
-            listOfGifs.removeAt(listOfGifs.lastIndex)
+
+            Log.d("TAGS", "${listOfGifs.size}")
+            if (currentGif == 0) {
+                buttonPrevious.visibility = View.GONE
+            }
         }
         return root
     }

@@ -19,10 +19,6 @@ class PageViewModel : ViewModel() {
     val response: LiveData<String>
         get() = _response
 
-    private val _listOfGifUrls = MutableLiveData<List<String>>()
-    val listOfGifUrls: LiveData<List<String>>
-        get() = _listOfGifUrls
-
     private val _description = MutableLiveData<String>()
     val description: LiveData<String>
         get() = _description
@@ -35,7 +31,6 @@ class PageViewModel : ViewModel() {
     }
 
 init {
-    _listOfGifUrls.value = listOf("")
 }
     fun getGif() {
         Api.retrofitService.getProperties().enqueue( object : Callback<GifProperty> {
@@ -46,7 +41,6 @@ init {
             override fun onResponse(call: Call<GifProperty>, response: Response<GifProperty>) {
                 _response.value = "${response.body()?.gifUrlSource}"
                 _description.value = "${response.body()?.description}"
-                _listOfGifUrls.value?.plus(_response.value.toString())
             }
         })
     }
