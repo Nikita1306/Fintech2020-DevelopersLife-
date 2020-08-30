@@ -1,10 +1,11 @@
 package com.example.developerslife
 
+import com.google.gson.annotations.SerializedName
 import com.squareup.moshi.Json
 
 data class GifProperty(
-    @Json(name = "description")
+    @SerializedName("description")
     val description: String,
-    @Json(name = "gifURL")
+    @SerializedName("gifURL")
     val gifUrlSource: String
 )
